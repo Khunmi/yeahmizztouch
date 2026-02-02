@@ -1,181 +1,59 @@
-# Salon Booking System - Phase 1
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-A lean, production-ready booking system for a single-location hair salon built with Laravel 11 and PostgreSQL.
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
-## Features (Phase 1)
+## About Laravel
 
-- **Services Catalog**: CRUD for salon services with pricing
-- **Availability Engine**: Dynamic slot generation with overlap prevention
-- **Booking Flow**: Hold → Confirm lifecycle with payment integration ready
-- **Concurrency Safe**: PostgreSQL advisory locks + exclusion constraints
-- **Policy Settings**: Configurable business rules (deposit %, late fees, etc.)
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-## Requirements
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-- PHP 8.3+
-- PostgreSQL 14+ (with btree_gist extension)
-- Composer
-- Laravel 11.x
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-## Installation
+## Learning Laravel
 
-1. **Install dependencies**:
-   ```bash
-   composer install
-   ```
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
 
-2. **Environment setup**:
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-3. **Configure database** (PostgreSQL):
-   ```env
-   DB_CONNECTION=pgsql
-   DB_HOST=127.0.0.1
-   DB_PORT=5432
-   DB_DATABASE=salon_booking
-   DB_USERNAME=your_username
-   DB_PASSWORD=your_password
-   ```
+## Laravel Sponsors
 
-4. **Run migrations**:
-   ```bash
-   php artisan migrate
-   ```
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-5. **Seed sample services**:
-   ```bash
-   php artisan db:seed --class=ServiceSeeder
-   ```
+### Premium Partners
 
-6. **Start the scheduler** (for expiring holds):
-   ```bash
-   php artisan schedule:work
-   ```
+- **[Vehikl](https://vehikl.com)**
+- **[Tighten Co.](https://tighten.co)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
+- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
+- **[Redberry](https://redberry.international/laravel-development)**
+- **[Active Logic](https://activelogic.com)**
 
-## API Endpoints
+## Contributing
 
-### Public Endpoints
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/services` | List all active services |
-| GET | `/api/availability?service_id=1&date=2024-01-15` | Get available slots for a date |
-| GET | `/api/availability/dates?service_id=1&days=30` | Get dates with availability |
-| POST | `/api/bookings/hold` | Hold an appointment slot |
-| GET | `/api/bookings/{id}` | Get appointment details |
-| POST | `/api/bookings/{id}/cancel` | Cancel an appointment |
+## Code of Conduct
 
-### Hold Appointment Request
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
 
-```json
-{
-  "service_id": 1,
-  "starts_at": "2024-01-15T10:00:00Z",
-  "client": {
-    "first_name": "Jane",
-    "last_name": "Doe",
-    "email": "jane@example.com",
-    "phone": "555-1234",
-    "date_of_birth": "1990-05-15"
-  },
-  "photo_consent": "full_ok",
-  "policy_acknowledged": true
-}
-```
+## Security Vulnerabilities
 
-## Policy Settings
-
-Default values configured in the database:
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `deposit_percentage` | 40 | Deposit percentage of service price |
-| `no_show_charge_percentage` | 70 | No-show charge percentage |
-| `late_cancel_charge_percentage` | 70 | Late cancellation charge percentage |
-| `reschedule_cutoff_hours` | 48 | Hours before appointment for free reschedule |
-| `late_fee_threshold_minutes` | 20 | Minutes late before fee applies |
-| `late_fee_cents` | 2000 | Late fee amount ($20) |
-| `auto_cancel_minutes_late` | 40 | Minutes late before auto-cancel |
-| `squeeze_in_fee_cents` | 4000 | Emergency/squeeze-in fee ($40) |
-| `minimum_client_age` | 15 | Minimum client age |
-| `hold_duration_minutes` | 10 | How long a hold lasts |
-| `business_hours_start` | 09:00 | Business hours start |
-| `business_hours_end` | 18:00 | Business hours end |
-
-## Appointment Statuses
-
-- `held` - Slot is temporarily reserved (expires after 10 min)
-- `confirmed` - Payment received, booking confirmed
-- `cancelled_by_client` - Client cancelled
-- `cancelled_by_salon` - Salon cancelled
-- `cancelled_by_system` - Hold expired
-- `no_show` - Client didn't show up
-- `completed` - Appointment finished
-
-## Concurrency Protection
-
-This system uses multiple layers of protection against double-booking:
-
-1. **PostgreSQL Advisory Locks**: Transaction-level locks keyed on timestamp
-2. **Exclusion Constraint**: Database-level prevention of overlapping time ranges
-3. **Application-level overlap check**: Additional verification inside transaction
-
-## Project Structure
-
-```
-app/
-├── Console/
-│   ├── Commands/
-│   │   └── ExpireHoldsCommand.php
-│   └── Kernel.php
-├── Enums/
-│   ├── AppointmentStatus.php
-│   ├── PaymentStatus.php
-│   ├── PaymentType.php
-│   └── PhotoConsent.php
-├── Http/
-│   ├── Controllers/
-│   │   └── Api/
-│   │       ├── AvailabilityController.php
-│   │       ├── BookingController.php
-│   │       └── ServiceController.php
-│   └── Requests/
-│       ├── CancelAppointmentRequest.php
-│       └── HoldAppointmentRequest.php
-├── Jobs/
-│   └── ExpireHeldAppointments.php
-├── Models/
-│   ├── Appointment.php
-│   ├── Client.php
-│   ├── Payment.php
-│   ├── PolicySetting.php
-│   └── Service.php
-└── Services/
-    ├── AvailabilityService.php
-    └── BookingService.php
-database/
-├── migrations/
-│   ├── 2024_01_01_000001_create_services_table.php
-│   ├── 2024_01_01_000002_create_clients_table.php
-│   ├── 2024_01_01_000003_create_appointments_table.php
-│   ├── 2024_01_01_000004_create_payments_table.php
-│   └── 2024_01_01_000005_create_policy_settings_table.php
-└── seeders/
-    └── ServiceSeeder.php
-routes/
-└── api.php
-```
-
-## Next Steps (Phase 2)
-
-- [ ] Stripe payment integration with webhooks
-- [ ] Admin authentication & dashboard
-- [ ] Email notifications (confirmation, cancellation)
-- [ ] Calendar UI (day/week views)
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
 ## License
 
-Proprietary - All rights reserved.
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
