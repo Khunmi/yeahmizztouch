@@ -190,7 +190,9 @@ function bookingCalendar() {
             
             const response = await fetch(`/api/availability/dates?service_id=${this.serviceId}&start_date=${this.formatDate(startDate)}&end_date=${this.formatDate(endDate)}`);
             const data = await response.json();
-            this.availableDates = data.data.available_dates;
+            this.availableDates = (data.data || [])
+                .filter(d => d.has_availability)
+                .map(d => d.date);
         },
 
         async selectDate(day) {
@@ -203,7 +205,13 @@ function bookingCalendar() {
 
             const response = await fetch(`/api/availability?service_id=${this.serviceId}&date=${day.date}`);
             const data = await response.json();
-            this.slots = data.data.slots;
+            this.slots =
+                data?.data?.slots ??
+                data?.data ??
+                data?.slots ??
+                [];
+
+            if (!Array.isArray(this.slots)) this.slots = [];
             this.loadingSlots = false;
         },
 
@@ -218,28 +226,31 @@ function bookingCalendar() {
             this.creatingHold = true;
             this.error = null;
 
-            const response = await fetch('/api/bookings/hold', {
+            const response = await fetch('/book/hold', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
                 body: JSON.stringify({
-                    service_id: this.serviceId,
-                    date: this.selectedDate,
-                    start_time: this.selectedSlot.start_time
+                service_id: this.serviceId,
+                date: this.selectedDate,
+                start_time: `${this.selectedSlot.time}:00`
                 })
             });
 
             const data = await response.json();
 
             if (response.ok) {
-                window.location.href = `/book/details/${data.data.hold_uuid}`;
+                const holdUuid = data?.data?.hold_uuid ?? data?.data?.uuid ?? data?.hold_uuid;
+                window.location.href = `/book/details/${holdUuid}`;
             } else {
-                this.error = data.error || 'This time slot is no longer available.';
+                this.error = data?.message || data?.error || 'This time slot is no longer available.';
                 this.creatingHold = false;
             }
         }
+
     }
 }
 </script>

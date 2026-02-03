@@ -13,6 +13,12 @@ return [
     | a conventional file to locate the various service credentials.
     |
     */
+    'stripe' => [
+        'enabled' => env('STRIPE_ENABLED', false),
+        'secret' => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+    ],
+
 
     'postmark' => [
         'key' => env('POSTMARK_API_KEY'),

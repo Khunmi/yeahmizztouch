@@ -30,10 +30,14 @@ Route::prefix('book')->name('booking.')->group(function () {
     
     // Step 2: Select date/time
     Route::get('/service/{service}', [BookingController::class, 'selectDateTime'])->name('select-datetime');
+
+    Route::post('/hold', [BookingController::class, 'createHold'])->name('hold');
+
     
     // Step 3: Enter details
     Route::get('/details/{holdUuid}', [BookingController::class, 'showDetailsForm'])->name('details');
     Route::post('/details/{holdUuid}', [BookingController::class, 'processDetails'])->name('details.process');
+
     
     // Payment callbacks
     Route::get('/success', [BookingController::class, 'success'])->name('success');

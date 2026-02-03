@@ -70,8 +70,12 @@ class BookingController extends Controller
         $request->validate([
             'service_id' => 'required|exists:services,id',
             'date' => 'required|date_format:Y-m-d',
-            'start_time' => 'required|date_format:H:i:s',
+            'start_time' => ['required', 'regex:/^\d{2}:\d{2}(:\d{2})?$/'],
         ]);
+        // 👇 NORMALIZE HERE
+        $startTime = strlen($request->start_time) === 5
+            ? $request->start_time . ':00'
+            : $request->start_time;
 
         $service = Service::findOrFail($request->service_id);
         
@@ -88,7 +92,7 @@ class BookingController extends Controller
             $hold = $this->bookingService->createHold(
                 $service,
                 $date,
-                $request->start_time,
+                $startTime,
                 $sessionId
             );
 
